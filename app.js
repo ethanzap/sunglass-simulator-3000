@@ -1,11 +1,11 @@
 const video = document.querySelector('#preview');
 const cameraBtn = document.querySelector('#cameraBtn');
+const stopBtn = document.querySelector('#stopBtn');
 const shadesBtn = document.querySelector('#shadesBtn');
 const metaBtn = document.querySelector('#metaBtn');
 const statusText = document.querySelector('#status');
 const message = document.querySelector('#message');
 const shade = document.querySelector('#shade');
-const glasses = document.querySelector('.fake-glasses');
 const recTag = document.querySelector('#recTag');
 const download = document.querySelector('#download');
 
@@ -30,7 +30,6 @@ async function startCamera() {
         video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
       });
     } catch (preferredCameraError) {
-      // Some mobile browsers reject the facingMode constraint even when a camera is available.
       stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
     }
 
@@ -42,6 +41,7 @@ async function startCamera() {
     shadesBtn.disabled = false;
     metaBtn.disabled = !window.MediaRecorder;
     cameraBtn.hidden = true;
+    stopBtn.hidden = false;
     statusText.textContent = 'Camera on.';
   } catch (error) {
     stream?.getTracks().forEach(track => track.stop());
@@ -56,10 +56,29 @@ async function startCamera() {
 
 cameraBtn.addEventListener('click', startCamera);
 
+stopBtn.addEventListener('click', () => {
+  if (recording && recorder?.state !== 'inactive') recorder.stop();
+  recording = false;
+  recTag.classList.remove('on');
+  metaBtn.classList.remove('recording');
+  metaBtn.textContent = 'M3TA';
+  metaBtn.disabled = true;
+  shadesBtn.disabled = true;
+  wearing = false;
+  shade.classList.remove('on');
+  stream?.getTracks().forEach(track => track.stop());
+  stream = undefined;
+  video.srcObject = null;
+  message.hidden = false;
+  stopBtn.hidden = true;
+  cameraBtn.hidden = false;
+  cameraBtn.disabled = false;
+  statusText.textContent = 'Camera stopped.';
+});
+
 shadesBtn.addEventListener('click', () => {
   wearing = !wearing;
   shade.classList.toggle('on', wearing);
-  glasses.classList.toggle('on', wearing);
   shadesBtn.textContent = wearing ? 'Take off' : 'Put on sunglasses';
   statusText.textContent = wearing ? 'Sunglasses on.' : 'Sunglasses off.';
 });
