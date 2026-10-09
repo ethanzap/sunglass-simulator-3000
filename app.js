@@ -15,61 +15,88 @@ let chunks = [];
 let wearing = false;
 let recording = false;
 
-cameraBtn.addEventListener('click', async () => {
+async function startCamera() {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    statusText.textContent = 'Camera access is unavailable here. Open this page in Safari or Chrome over HTTPS.';
+    return;
+  }
+
+  cameraBtn.disabled = true;
+  statusText.textContent = 'Starting camera…';
   try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
-    });
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+    } catch (preferredCameraError) {
+      // Some mobile browsers reject the facingMode constraint even when a camera is available.
+      stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+    }
+
     video.srcObject = stream;
+    video.muted = true;
+    video.playsInline = true;
+    await video.play();
     message.hidden = true;
-    cameraBtn.disabled = true;
     shadesBtn.disabled = false;
     metaBtn.disabled = !window.MediaRecorder;
-    statusText.textContent = 'Camera on. Try not to be dazzled.';
+    cameraBtn.hidden = true;
+    statusText.textContent = 'Camera on.';
   } catch (error) {
-    statusText.textContent = 'Camera said nope. Allow access + use HTTPS or localhost.';
-    console.error(error);
+    stream?.getTracks().forEach(track => track.stop());
+    stream = undefined;
+    cameraBtn.disabled = false;
+    statusText.textContent = error.name === 'NotAllowedError'
+      ? 'Camera permission was blocked. Allow it in browser settings, then try again.'
+      : 'Could not start the camera. Try opening this page in Safari or Chrome.';
+    console.error('Camera startup failed:', error);
   }
-});
+}
+
+cameraBtn.addEventListener('click', startCamera);
 
 shadesBtn.addEventListener('click', () => {
   wearing = !wearing;
   shade.classList.toggle('on', wearing);
   glasses.classList.toggle('on', wearing);
-  shadesBtn.textContent = wearing ? '😎 TAKE OFF SUNGLASSES' : '🕶️ PUT ON SUNGLASSES';
-  statusText.textContent = wearing ? 'WOW. It is literally darker now.' : 'Shades removed. Welcome back to the sun.';
+  shadesBtn.textContent = wearing ? 'Take off' : 'Put on sunglasses';
+  statusText.textContent = wearing ? 'Sunglasses on.' : 'Sunglasses off.';
 });
 
 metaBtn.addEventListener('click', () => {
   if (!recording) {
-    const mimeType = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].find(type => MediaRecorder.isTypeSupported(type));
+    const types = ['video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+    const mimeType = types.find(type => MediaRecorder.isTypeSupported(type));
     try {
       recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
       chunks = [];
       recorder.ondataavailable = event => { if (event.data.size) chunks.push(event.data); };
       recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: recorder.mimeType || 'video/webm' });
+        const type = recorder.mimeType || 'video/webm';
+        const blob = new Blob(chunks, { type });
         download.href = URL.createObjectURL(blob);
-        download.download = `m3ta-sunglasses-${Date.now()}.webm`;
+        download.download = 'sunglass-sim-' + Date.now() + '.' + (type.includes('mp4') ? 'mp4' : 'webm');
         download.hidden = false;
-        download.textContent = '⬇ Download your extremely important video';
+        download.textContent = 'Download recording';
       };
       recorder.start();
       recording = true;
       recTag.classList.add('on');
-      metaBtn.textContent = '⏹ STOP M3TA';
-      statusText.textContent = 'M3TA IS WATCHING. (recording...)';
+      metaBtn.classList.add('recording');
+      metaBtn.textContent = 'Stop';
+      statusText.textContent = 'Recording…';
     } catch (error) {
-      statusText.textContent = 'Could not start recording on this browser.';
-      console.error(error);
+      statusText.textContent = 'Recording is unavailable in this browser.';
+      console.error('Recording failed:', error);
     }
   } else {
     recorder.stop();
     recording = false;
     recTag.classList.remove('on');
-    metaBtn.textContent = '🔴 M3TA';
-    statusText.textContent = 'Recording stopped. The evidence is ready below.';
+    metaBtn.classList.remove('recording');
+    metaBtn.textContent = 'M3TA';
+    statusText.textContent = 'Recording saved below.';
   }
 });
 
