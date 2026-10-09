@@ -2,37 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#fff735">
-  <title>☀️ Sunglass Simulator 3000 ☀️</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111">
+  <title>Sunglass Simulator</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
-    <header>
-      <div class="tiny">WELCOME 2 THE FUTURE (probably)</div>
-      <h1>☀️ SUNGLASS<br>SIMULATOR <span>3000</span> ☀️</h1>
-      <p class="tagline">put shades on your face without buying shades!!</p>
-    </header>
+  <main class="camera-view">
+    <video id="preview" autoplay muted playsinline></video>
+    <div id="shade" class="shade" aria-hidden="true"></div>
+    <div class="fake-glasses" aria-hidden="true"><i></i><i></i><b></b></div>
 
-    <section class="camera-box" aria-label="Camera preview">
-      <video id="preview" autoplay muted playsinline></video>
-      <div id="shade" class="shade" aria-hidden="true"></div>
-      <div class="fake-glasses" aria-hidden="true"><i></i><i></i><b></b></div>
-      <div id="message" class="message">camera goes here<br>👇</div>
-      <div class="live-tag">● LIVE-ISH</div>
-      <div id="recTag" class="rec-tag">● REC</div>
-    </section>
-
-    <div class="buttons">
-      <button id="cameraBtn" class="camera-btn">📸 TURN ON CAMERA</button>
-      <button id="shadesBtn" class="shades-btn" disabled>🕶️ PUT ON SUNGLASSES</button>
-      <button id="metaBtn" class="meta-btn" disabled>🔴 M3TA</button>
+    <div class="top-bar"><span>SUNGLASS SIM</span><span id="recTag" class="rec-tag">● REC</span></div>
+    <div id="message" class="message">Camera preview will appear here.</div>
+    <div class="controls">
+      <button id="cameraBtn" class="camera-btn">Start camera</button>
+      <button id="shadesBtn" disabled>Put on sunglasses</button>
+      <button id="metaBtn" class="record-btn" disabled>M3TA</button>
     </div>
-    <p id="status" class="status">No face? No problem. (camera permission required)</p>
-    <p class="fineprint">⚠️ PRO TIP: real sunglasses still work better outside lol</p>
-    <a id="download" hidden>Download your extremely important video</a>
-    <footer>© 2026 SUNGLASS SIMULATOR INTERNATIONAL-ish</footer>
+    <p id="status" class="status" role="status">Allow camera access to begin.</p>
+    <a id="download" hidden>Download recording</a>
   </main>
   <script src="app.js"></script>
 </body>
