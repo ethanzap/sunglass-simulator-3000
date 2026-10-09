@@ -3,22 +3,19 @@ html, body { width: 100%; height: 100%; margin: 0; background: #111; color: #fff
 body { overflow: hidden; }
 .camera-view { position: relative; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; background: #111; }
 video { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; background: #111; }
-.shade { position: absolute; inset: 0; background: rgba(7, 17, 42, .48); opacity: 0; transition: opacity .25s; pointer-events: none; }
+.shade { position: absolute; z-index: 1; inset: 0; background: rgba(0, 0, 0, .68); opacity: 0; transition: opacity .25s; pointer-events: none; }
 .shade.on { opacity: 1; }
-.fake-glasses { position: absolute; width: min(64vw, 340px); aspect-ratio: 2.5 / 1; left: 50%; top: 36%; display: flex; align-items: center; justify-content: center; gap: 3%; opacity: 0; transform: translateX(-50%); transition: opacity .25s; pointer-events: none; }
-.fake-glasses.on { opacity: .88; }
-.fake-glasses i { display: block; width: 43%; height: 100%; background: rgba(5, 7, 18, .78); border: 3px solid #151515; border-radius: 12px 12px 35px 35px; }
-.fake-glasses b { position: absolute; width: 12%; height: 5px; background: #151515; top: 12%; left: 44%; }
 .top-bar { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top)); left: 14px; right: 14px; display: flex; justify-content: space-between; align-items: center; color: white; font-size: 12px; font-weight: 600; letter-spacing: .12em; text-shadow: 0 1px 4px #000; pointer-events: none; }
 .rec-tag { display: none; color: #ff4141; letter-spacing: .05em; }
 .rec-tag.on { display: inline; animation: blink .8s infinite; }
 @keyframes blink { 50% { opacity: .35; } }
-.message { position: absolute; z-index: 1; top: 44%; left: 50%; width: max-content; max-width: calc(100% - 36px); transform: translate(-50%, -50%); text-align: center; padding: 10px 14px; color: #fff; background: rgba(0,0,0,.48); border-radius: 6px; font-size: 14px; }
+.message { position: absolute; z-index: 2; top: 44%; left: 50%; width: max-content; max-width: calc(100% - 36px); transform: translate(-50%, -50%); text-align: center; padding: 10px 14px; color: #fff; background: rgba(0,0,0,.48); border-radius: 6px; font-size: 14px; }
 .message[hidden] { display: none; }
 .controls { position: absolute; z-index: 3; left: 12px; right: 12px; bottom: max(20px, env(safe-area-inset-bottom)); display: flex; justify-content: center; gap: 8px; }
 button { min-height: 42px; padding: 0 14px; border: 1px solid rgba(255,255,255,.6); border-radius: 6px; background: rgba(20,20,20,.78); color: #fff; font: 600 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; cursor: pointer; backdrop-filter: blur(6px); }
 button:disabled { display: none; }
 button:active { background: rgba(70,70,70,.9); }
+.stop-btn { color: #ff9b9b; }
 .record-btn { color: #ff5d5d; }
 .record-btn.recording { background: #b51d1d; color: #fff; }
 .status { position: absolute; z-index: 2; left: 18px; right: 18px; bottom: max(70px, calc(env(safe-area-inset-bottom) + 58px)); margin: 0; text-align: center; font-size: 12px; line-height: 1.4; color: rgba(255,255,255,.85); text-shadow: 0 1px 3px #000; }
